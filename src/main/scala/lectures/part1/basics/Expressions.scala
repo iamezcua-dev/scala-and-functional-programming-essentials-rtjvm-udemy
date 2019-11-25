@@ -49,4 +49,31 @@ object Expressions extends App {
     if ( z > 2 ) "hello" else "goodbye"
   }
   
+  /*
+      QUIZ
+      
+      1. What's the difference between "Hello World" v.s. println( "Hello World" )?
+      Answer:
+              The first expression is a String, whereas the second one is a function of type Unit, that prints a message
+              on the screen as side effect.
+      
+      2. What's the value of:
+      
+        val someValue = {
+          2 < 3
+        }
+        
+        Answer:
+                true .
+        
+        
+        val someOtherValue = {
+          if( someValue ) 239 else 986
+          42
+        }
+        
+        Answer:
+                42, because it is the last expression inside the code block.
+   */
+  
 }
