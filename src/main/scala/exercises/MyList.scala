@@ -1,8 +1,8 @@
-package lectures.part2.oop.inheritanceexercises
+package exercises
 
 import com.typesafe.scalalogging.LazyLogging
 
-abstract class MyList extends LazyLogging {
+abstract class MyList {
 	/*
 		head = first element of  the list
 		tail = remaider of the list
@@ -37,7 +37,7 @@ class Node( element: Int, listTail: MyList ) extends MyList {
 	}
 }
 
-object MyApp extends App {
+object MyApp extends App with LazyLogging {
 	val list = new Node( 1, new Node( 2, new Node( 3, new Node( 5, EmptyList ) ) ) )
-	logger.info( list )
+	logger.info( list.toString )
 }
