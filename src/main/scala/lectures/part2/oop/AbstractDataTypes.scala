@@ -1,4 +1,4 @@
-package lectures.part2.oop.inheritancecontinued
+package lectures.part2.oop
 
 object AbstractDataTypes extends App {
 	
@@ -23,7 +23,7 @@ object AbstractDataTypes extends App {
 	
 	class Crocodile extends Animal with Carnivore with ColdBlooded {
 		override val creatureType: String = "croc"
-		def eat: Unit = "Nom, Nom!"
+		def eat: Unit = println( "Nom, Nom!" )
 		def eat( animal: Animal ): Unit = println( s"I'm a croc and I'm eating ${animal.creatureType}" )
 	}
 	
