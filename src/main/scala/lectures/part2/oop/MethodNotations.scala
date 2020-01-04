@@ -1,7 +1,6 @@
-package lectures.part2.oop.methodnotation
+package lectures.part2.oop
 
 import com.typesafe.scalalogging.LazyLogging
-
 import scala.language.postfixOps
 
 object MethodNotations extends App with LazyLogging {
