@@ -17,9 +17,10 @@ abstract class MyList[ +A ] {
 	def add[ B >: A ]( number: B ): MyList[ B ]
 	def listContents: String
 	override def toString: String = s"[ $listContents ]"
-	def map[ B >: A ]( transformer: B => B ): MyList[ B ]
-	def filter[ B >: A ]( predicate: B => Boolean ): MyList[ B ]
-	def flatMap[ B >: A ]( transformer: B => MyList[ B ] ): MyList[ B ]
+	def map[ B ]( transformer: MyTransformer[ A, B ] ): MyList[ B ]
+	def filter( predicate: MyPredicate[ A ] ): MyList[ A ]
+	def flatMap[ B ]( transformer: MyTransformer[ A, MyList[ B ] ] ): MyList[ B ]
+	def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ]
 }
 
 object EmptyList extends MyList[ Nothing ] {
@@ -28,9 +29,10 @@ object EmptyList extends MyList[ Nothing ] {
 	def isEmpty: Boolean = true
 	def add[ B >: Nothing ]( element: B ): MyList[ B ] = new Node( element, EmptyList )
 	def listContents: String = ""
-	override def map[ B >: Nothing ]( transformer: B => B ): MyList[ B ] = this
-	override def filter[ B >: Nothing ]( predicate: B => Boolean ): MyList[ B ] = this
-	override def flatMap[ B >: Nothing ]( transformer: B => MyList[ B ] ): MyList[ B ] = this
+	override def map[ B ]( transformer: MyTransformer[ Nothing, B ] ): MyList[ B ] = EmptyList
+	override def filter( predicate: MyPredicate[ Nothing ] ): MyList[ Nothing ] = EmptyList
+	override def flatMap[ B ]( transformer: MyTransformer[ Nothing, MyList[ B ] ] ): MyList[ B ] = EmptyList
+	override def ++[ B >: Nothing ]( list: MyList[ B ] ): MyList[ B ] = list
 }
 
 class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
@@ -44,35 +46,52 @@ class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
 		else s"$element (${element.getClass.getSimpleName}), ${listTail.listContents}"
 	}
 	
-	override def map[ B >: A ]( transformer: B => B ): MyList[ B ] = {
-		if ( listTail.isEmpty ) new Node( transformer( element ), EmptyList )
-		else {
-			new Node( transformer( element ), listTail.map( transformer ) )
-		}
+	override def map[ B ]( transformer: MyTransformer[ A, B ] ): MyList[ B ] =
+		new Node( transformer.transform( element ), listTail.map( transformer ) )
+	
+	/*
+		[1, 2, 3, 4].filter( n % 2 == 0 )
+		= predicate( 1 % 2 == 0 ) is false. Then, continuing with: [2, 3, 4].filter( n % 2 == 0 )
+		= predicate( 2 % 2 == 0 ) is true. Then, adding it to the list and continuing with: [2], [3, 4].filter( n % 2 == 0 )
+		= predicate( 3 % 2 == 0 ) is false. Then, continuing with: [2], [4].filter( n % 2 == 0 )
+		= predicate( 4 % 2 == 0 ) is true. Then, adding it to the list and continuing with: [2], [3].filter( n % 2 == 0 )
+		
+	 */
+	override def filter( predicate: MyPredicate[ A ] ): MyList[ A ] = {
+		if ( predicate.test( element ) ) new Node( element, tail.filter( predicate ) )
+		else tail.filter( predicate )
 	}
 	
-	override def filter[ B >: A ]( predicate: B => Boolean ): MyList[ B ] = {
-		if ( listTail.isEmpty ) {
-			if ( predicate( element ) ) {
-				new Node( element, EmptyList )
-			} else {
-				EmptyList
-			}
-		} else {
-			if ( predicate( element ) ) {
-				new Node( element, tail.filter( predicate ) )
-			} else {
-				tail.filter( predicate )
-			}
-		}
-	}
+	/*
+		[ 1, 2, 3].flatMap(  n => [ n, n+1 ] )
+		= [1, 2] ++ [2, 3].flatMap( transformer )
+		= [1, 2, 2, 3] ++ [3].flatMap( transformer)
+		= [1, 2, 2, 3, 3, 4] ++ EmptyList.flatMap( transformer )
+		= [1, 2, 2, 3, 3, 4]
+	 */
+	override def flatMap[ B ]( transformer: MyTransformer[ A, MyList[ B ] ] ): MyList[ B ] =
+		transformer.transform( element ) ++ listTail.flatMap( transformer )
 	
-	override def flatMap[ B >: A ]( transformer: B => MyList[ B ] ): MyList[ B ] = {
-		val mappedElement = transformer( element )
-		if ( listTail.isEmpty ) new Node( mappedElement.head, new Node( mappedElement.tail.head, EmptyList ) )
-		else new Node( mappedElement.head, new Node( mappedElement.tail.head, listTail.flatMap( transformer ) ) )
-	}
-	
+	/*
+			list ++ new Node( 27, new Node( 30, EmptyList ) ) )
+			
+			= [ 1, 2, 3, 4, 5, 6, 12, 15, 27, 30 ] ++ [ 27, 30 ]
+			= [ 1] ,  [ 2, 3, 4, 5, 6, 12, 15, 27, 30 ] ++ [ 27, 30 ]
+			= [ 1, 2] ,  [ 3, 4, 5, 6, 12, 15, 27, 30 ] ++ [ 27, 30 ]
+			= [ 1, 2, 3] ,  [ 4, 5, 6, 12, 15, 27, 30 ] ++ [ 27, 30 ]
+        				. . .
+	 		= [ 1, 2, 3, 4, 5, 6, 12, 15, 27 ] ,  [ 30 ] ++ [ 27, 30 ]
+	 		= [ 1, 2, 3, 4, 5, 6, 12, 15, 27, 30, 27, 30 ]
+	 */
+	override def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ] = new Node( head, tail ++ list )
+}
+
+trait MyPredicate[ -T ] {
+	def test( elem: T ): Boolean
+}
+
+trait MyTransformer[ -A, B ] {
+	def transform( elem: A ): B
 }
 
 object MyApp extends App with LazyLogging {
