@@ -1,7 +1,7 @@
 package lectures.part2.oop
 
 import com.typesafe.scalalogging.LazyLogging
-import exercises.{ EmptyList, MyList, Node }
+import exercises.{ EmptyList, MyList, MyPredicate, MyTransformer, Node }
 
 object AnonymousClasses extends App with LazyLogging {
 	abstract class Animal {
@@ -49,15 +49,7 @@ object AnonymousClasses extends App with LazyLogging {
 			[1,2,3].flatMap( n => [n,n+1]) => [1,2,2,3,3,4]
 	 */
 	
-	// Exercises solutions
-	trait MyPredicate[ -T ] {
-		def test( element: T ): Boolean
-	}
-	
-	trait MyTransformer[ -A, B ] {
-		def transform( element: A ): B
-	}
-	
+	// Solutions to the exercises
 	val list = EmptyList.add( 15 ).add( 12 ).add( 6 ).add( 5 ).add( 4 ).add( 3 ).add( 2 ).add( 1 )
 	logger.info( s"Original list: ${list.toString}" )
 	
@@ -65,10 +57,9 @@ object AnonymousClasses extends App with LazyLogging {
 		map function implementation
 	 */
 	logger.info( "Map function implementation" )
-	class MultiplierTransformer extends MyTransformer[ Int, Int ] {
+	val multiplierTransformer = new MyTransformer[ Int, Int ] {
 		override def transform( thing: Int ): Int = thing * 2
 	}
-	val multiplierTransformer = new MultiplierTransformer
 	val multipliedList = list.map( multiplierTransformer.transform )
 	println( multipliedList )
 	assert( multipliedList.toString equals "[ 2 (Integer), 4 (Integer), 6 (Integer), 8 (Integer), 10 (Integer), " +
@@ -79,11 +70,10 @@ object AnonymousClasses extends App with LazyLogging {
 		filter function implementation
 	 */
 	logger.info( "Filter function implementation" )
-	class EvenPredicate extends MyPredicate[ Int ] {
+	val evenPredicate = new MyPredicate[ Int ] {
 		override def test( element: Int ): Boolean = element % 2 == 0
 	}
-	val evenPredicate = new EvenPredicate
-	val filteredList = list.filter( evenPredicate.test )
+	val filteredList = list.filter( evenPredicate )
 	println( filteredList )
 	assert( filteredList.toString.equals( "[ 2 (Integer), 4 (Integer), 6 (Integer), 12 (Integer) ]" ) )
 	assert( EmptyList.filter( evenPredicate.test ).toString.equals( "[  ]" ) )
@@ -91,13 +81,12 @@ object AnonymousClasses extends App with LazyLogging {
 	/*
 		flatMap function implementation
 	 */
-	//	[1,2,3].flatMap( n => [n,n+1]) => [1,2,2,3,3,4]
 	logger.info( "FlatMap function implementation" )
-	class ElementAndElementPlusOneTransformer extends MyTransformer[ Int, MyList[ Int ] ] {
+	
+	val elementAndElementPlusOneTransformer = new MyTransformer[ Int, MyList[ Int ] ] {
 		override def transform( element: Int ): MyList[ Int ] = new Node( element, new Node( element + 1, EmptyList ) )
 	}
-	val elementAndElementPlusOneTransformer = new ElementAndElementPlusOneTransformer
-	val flatMappedList = list.flatMap( elementAndElementPlusOneTransformer.transform )
+	val flatMappedList = list.flatMap( elementAndElementPlusOneTransformer )
 	println( flatMappedList )
 	assert( flatMappedList.toString equals "[ 1 (Integer), 2 (Integer), 2 (Integer), 3 (Integer), 3 (Integer)," +
 			" 4 (Integer), 4 (Integer), 5 (Integer), 5 (Integer), 6 (Integer), 6 (Integer), 7 (Integer), 12 (Integer)," +
