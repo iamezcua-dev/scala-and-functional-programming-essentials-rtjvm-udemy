@@ -84,7 +84,7 @@ object AnonymousClasses extends App with LazyLogging {
 	logger.info( "FlatMap function implementation" )
 	
 	val elementAndElementPlusOneTransformer = new MyTransformer[ Int, MyList[ Int ] ] {
-		override def transform( element: Int ): MyList[ Int ] = new Node( element, new Node( element + 1, EmptyList ) )
+		override def transform( element: Int ): MyList[ Int ] = Node( element, Node( element + 1, EmptyList ) )
 	}
 	val flatMappedList = list.flatMap( elementAndElementPlusOneTransformer )
 	println( flatMappedList )
