@@ -23,11 +23,11 @@ abstract class MyList[ +A ] {
 	def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ]
 }
 
-object EmptyList extends MyList[ Nothing ] {
+case object EmptyList extends MyList[ Nothing ] {
 	def head: Nothing = throw new NoSuchElementException
 	def tail: Nothing = throw new NoSuchElementException
 	def isEmpty: Boolean = true
-	def add[ B >: Nothing ]( element: B ): MyList[ B ] = new Node( element, EmptyList )
+	def add[ B >: Nothing ]( element: B ): MyList[ B ] = Node( element, EmptyList )
 	def listContents: String = ""
 	override def map[ B ]( transformer: MyTransformer[ Nothing, B ] ): MyList[ B ] = EmptyList
 	override def filter( predicate: MyPredicate[ Nothing ] ): MyList[ Nothing ] = EmptyList
@@ -35,19 +35,19 @@ object EmptyList extends MyList[ Nothing ] {
 	override def ++[ B >: Nothing ]( list: MyList[ B ] ): MyList[ B ] = list
 }
 
-class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
+case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
 	def head: A = element
 	def tail: MyList[ A ] = this.listTail
 	def isEmpty: Boolean = false
 	// B supertype of Nothing
-	def add[ B >: A ]( element: B ): MyList[ B ] = new Node( element, this )
+	def add[ B >: A ]( element: B ): MyList[ B ] = Node( element, this )
 	def listContents: String = {
 		if ( listTail.isEmpty ) s"$element (${element.getClass.getSimpleName})"
 		else s"$element (${element.getClass.getSimpleName}), ${listTail.listContents}"
 	}
 	
 	override def map[ B ]( transformer: MyTransformer[ A, B ] ): MyList[ B ] =
-		new Node( transformer.transform( element ), listTail.map( transformer ) )
+		Node( transformer.transform( element ), listTail.map( transformer ) )
 	
 	/*
 		[1, 2, 3, 4].filter( n % 2 == 0 )
@@ -58,7 +58,7 @@ class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
 		
 	 */
 	override def filter( predicate: MyPredicate[ A ] ): MyList[ A ] = {
-		if ( predicate.test( element ) ) new Node( element, tail.filter( predicate ) )
+		if ( predicate.test( element ) ) Node( element, tail.filter( predicate ) )
 		else tail.filter( predicate )
 	}
 	
@@ -83,7 +83,7 @@ class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
 	 		= [ 1, 2, 3, 4, 5, 6, 12, 15, 27 ] ,  [ 30 ] ++ [ 27, 30 ]
 	 		= [ 1, 2, 3, 4, 5, 6, 12, 15, 27, 30, 27, 30 ]
 	 */
-	override def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ] = new Node( head, tail ++ list )
+	override def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ] = Node( head, tail ++ list )
 }
 
 trait MyPredicate[ -T ] {
@@ -94,8 +94,8 @@ trait MyTransformer[ -A, B ] {
 	def transform( elem: A ): B
 }
 
-object MyApp extends App with LazyLogging {
-	val list = new Node( 1, new Node( 2, new Node( 3, new Node( 5, EmptyList ) ) ) )
+case object MyApp extends App with LazyLogging {
+	val list = Node( 1, Node( 2, Node( 3, Node( 5, EmptyList ) ) ) )
 	logger.info( list.toString )
 	
 	// Case 1: List of zero elements 	-> [  ]
