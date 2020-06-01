@@ -1,6 +1,6 @@
 name := "rock-the-jvm-scala-and-functional-programming-for-beginners"
 version := "0.1"
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.2"
 
 libraryDependencies ++= Seq(
 	"com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
