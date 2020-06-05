@@ -1,4 +1,4 @@
-package lectures.part2.oop.inheritanceandtraits
+package lectures.part2.oop
 
 object InheritanceAndTraits extends App {
 	

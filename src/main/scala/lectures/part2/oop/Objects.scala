@@ -1,4 +1,4 @@
-package lectures.part2.oop.scalaobjects
+package lectures.part2.oop
 
 import com.typesafe.scalalogging.LazyLogging
 
