@@ -1,7 +1,6 @@
 package exercises
 
 import com.typesafe.scalalogging.LazyLogging
-import lectures.part2.oop.AnonymousClasses.logger
 
 // Covariant class
 abstract class MyList[ +A ] {
@@ -170,18 +169,12 @@ case object MyApp extends App with LazyLogging {
 	println( listOfIntegers)
 	println( listOfStrings )
 
-	println( listOfIntegers.map( new Function1[Int, Int] {
-		override def apply( elem: Int ): Int = elem * 2
-	}).toString )
+	println( listOfIntegers.map( _ * 2 ).toString )
 
-	println( listOfIntegers.filter( new Function1[Int, Boolean] {
-		override def apply( elem: Int ): Boolean = elem % 2 == 0
-	}).toString )
+	println( listOfIntegers.filter( _ % 2 == 0 ).toString )
 
 	println( listOfIntegers ++ anotherListOfIntegers )
-	println( listOfIntegers.flatMap( new Function1[Int, MyList[Int]] {
-		override def apply(v1: Int): MyList[Int] = Node( v1, Node( v1 + 1, EmptyList ) )
-	}).toString )
+	println( listOfIntegers.flatMap( (elem: Int) => Node( elem, Node( elem + 1, EmptyList ) ) ).toString )
 
 }
 

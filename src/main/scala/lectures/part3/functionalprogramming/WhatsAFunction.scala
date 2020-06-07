@@ -22,17 +22,11 @@ object WhatsAFunction extends App {
         - How to do it?
    */
   // Type of the function: (Int => Int)
-  def multiplier(i: Int): (Int => Int) = {
-    (v1: Int) => v1 * i
-  }
+  def multiplier(i: Int): Int => Int = (v1: Int) => v1 * i
 
   println(multiplier(8)(3))
 
-  val superAdder: Function1[Int, Function1[Int, Int]] = new Function1[Int, Function1[Int, Int]] {
-    override def apply(x: Int): Function1[Int, Int] = new Function1[Int, Int] {
-      override def apply(y: Int): Int = x + y
-    }
-  }
+  val superAdder: Int => Int => Int = (x: Int) => (y: Int) => x + y
 
   val adder3 = superAdder(3)
   println( adder3(4) )
