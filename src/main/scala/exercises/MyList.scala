@@ -114,5 +114,30 @@ case object MyApp extends App with LazyLogging {
 	println( EmptyList.add( "Amezcua" ).add( 3 ).add( "Isaac" ).add( 1 ) )
 	assert( EmptyList.add( "Amezcua" ).add( 3 ).add( "Isaac" ).add( 1 ).toString equals "[ 1 (Integer), Isaac (String), 3 (Integer), Amezcua (String) ]" )
 
+	/*
+		Author's code
+	 */
+	println( "*** Author's code ***" )
+
+	val listOfIntegers: MyList[Int] = Node( 1, Node(2, Node( 3, EmptyList ) ) )
+	val anotherListOfIntegers: MyList[Int] = Node( 1, Node( 4, Node( 3, EmptyList ) ) )
+	val listOfStrings: MyList[String] = Node( "Hello", Node( "Scala", EmptyList ) )
+
+	println( listOfIntegers)
+	println( listOfStrings )
+
+	println( listOfIntegers.map( new Function1[Int, Int] {
+		override def apply( elem: Int ): Int = elem * 2
+	}).toString )
+
+	println( listOfIntegers.filter( new Function1[Int, Boolean] {
+		override def apply( elem: Int ): Boolean = elem % 2 == 0
+	}).toString )
+
+	println( listOfIntegers ++ anotherListOfIntegers )
+	println( listOfIntegers.flatMap( new Function1[Int, MyList[Int]] {
+		override def apply(v1: Int): MyList[Int] = Node( v1, Node( v1 + 1, EmptyList ) )
+	}).toString )
+
 }
 
