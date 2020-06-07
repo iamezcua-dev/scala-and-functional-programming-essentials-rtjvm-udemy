@@ -28,6 +28,8 @@ object AnonymousFunctions extends App {
     1) MyList: Replace all FunctionX calls with lambdas
     2) Rewrite the "special" adder as an anonymous function
    */
-  
+
+  // 1) FunctionX calls replaced with lambdas in MyList.class
+  // 2) Special adder rewritten in WhatsAFunction.class
 
 }
