@@ -21,6 +21,12 @@ abstract class MyList[ +A ] {
 	def filter( predicate: A => Boolean ): MyList[ A ]
 	def flatMap[ B ]( transformer: A => MyList[ B ] ): MyList[ B ]
 	def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ]
+	def foreach( f: A => Unit ): Unit
+	def sort( f: (A, A) => Int ): MyList[ A ]
+	def zipWith[ B >: A ]( anotherList: MyList[ B ], f: (A, A) => B ): MyList[ B ]
+	def fold[ B >: A ]( initialValue: B )( f: (A, A) => B ): B
+	//- fold(start)(function) => a value
+	//[1,2,3].fold(0)(x + y) = 6
 }
 
 case object EmptyList extends MyList[ Nothing ] {
@@ -33,6 +39,10 @@ case object EmptyList extends MyList[ Nothing ] {
 	override def filter( predicate: Nothing => Boolean ): MyList[ Nothing ] = EmptyList
 	override def flatMap[ B ]( transformer: Nothing => MyList[ B ] ): MyList[ B ] = EmptyList
 	override def ++[ B >: Nothing ]( list: MyList[ B ] ): MyList[ B ] = list
+	override def foreach( f: Nothing => Unit ): Unit = EmptyList
+	override def sort( f: (Nothing, Nothing) => Int ): MyList[ Nothing ] = EmptyList
+	override def zipWith[ B >: Nothing ]( anotherList: MyList[ B ], f: (Nothing, Nothing) => B ): MyList[ B ] = EmptyList
+	override def fold[ B >: Nothing ]( initialValue: B )( f: (Nothing, Nothing) => B ): B = initialValue
 }
 
 case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
@@ -83,6 +93,39 @@ case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
 	 		= [ 1, 2, 3, 4, 5, 6, 12, 15, 27, 30, 27, 30 ]
 	 */
 	override def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ] = Node( head, tail ++ list )
+	
+	override def foreach( f: A => Unit ): Unit = {
+		f( head )
+		tail.foreach( f )
+	}
+	
+	override def sort( f: (A, A) => Int ): MyList[ A ] = {
+		def sortHelper( list: MyList[ A ], sortedList: MyList[ A ] ): MyList[ A ] = {
+			if ( list.isEmpty ) sortedList
+			else if ( sortedList.isEmpty ) sortHelper( list.tail, Node( list.head, EmptyList ) )
+			// swap elements if the element of the left is "less than" the one in the right.
+			else sortHelper( list.tail, insert( list.head, sortedList ) )
+		}
+		
+		def insert( number: A, sortedList: MyList[ A ] ): MyList[ A ] = {
+			if ( sortedList.tail.isEmpty ) {
+				if ( f( number, sortedList.head ) > 0 ) Node( sortedList.head, Node( number, EmptyList ) )
+				else Node( number, Node( sortedList.head, EmptyList ) )
+			} else if ( f( number, sortedList.head ) > 0 ) Node( sortedList.head, insert( number, sortedList.tail ) )
+			else Node( number, Node( sortedList.head, sortedList.tail ) )
+		}
+		
+		sortHelper( this, EmptyList )
+	}
+	
+	override def zipWith[ B >: A ]( anotherList: MyList[ B ], zippingFunction: (A, A) => B ): MyList[ B ] = {
+		if ( anotherList.isEmpty ) EmptyList
+		else Node( zippingFunction( head, anotherList.head.asInstanceOf[ A ] ), tail.zipWith( anotherList.tail, zippingFunction ) )
+	}
+	
+	override def fold[ B >: A ]( initialValue: B )( f: (A, A) => B ): B = {
+		tail.fold( f( initialValue.asInstanceOf[ A ], head ) )( f )
+	}
 }
 
 //trait MyPredicate[ -T ] {
