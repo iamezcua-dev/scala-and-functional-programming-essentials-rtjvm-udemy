@@ -129,14 +129,18 @@ object HOFsCurries extends App with LazyLogging {
   assert( zippedList.toString == "[ 5 (Integer), 12 (Integer), 21 (Integer), 32 (Integer) ]" )
   
   logger.info( s"Zipping the list $list with an empty list using a multiply function:" )
-  val zippedList1 = list.zipWith( EmptyList, multiply )
-  println( s"=> Results: ${zippedList1.toString}\n" )
-  assert( zippedList1.toString == "[  ]" )
+  try {
+    list.zipWith( EmptyList, multiply )
+  } catch {
+    case e: RuntimeException => println( "This caused a Runtime Exception because the other list was Empty." )
+  }
   
   logger.info( s"Zipping an empty list with $list using a multiply function:" )
-  val zippedList2 = EmptyList.zipWith( list, multiply )
-  println( s"=> Results: ${zippedList2.toString}\n" )
-  assert( zippedList2.toString == "[  ]" )
+  try {
+    EmptyList.zipWith( list, multiply )
+  } catch {
+    case e: RuntimeException => println( "This caused a Runtime Exception because we are trying to zip with an Empty list." )
+  }
   
   //	1.4 fold
   logger.info( s"Folding a list $list" )

@@ -25,7 +25,7 @@ abstract class MyList[ +A ] {
   def ++[ B >: A ]( list: MyList[ B ] ): MyList[ B ]
   def foreach( f: A => Unit ): Unit
   def sort( f: (A, A) => Int ): MyList[ A ]
-  def zipWith[ B >: A ]( anotherList: MyList[ B ], f: (A, A) => B ): MyList[ B ]
+  def zipWith[ B, C ]( anotherList: MyList[ B ], zippingFunction: (A, B) => C ): MyList[ C ]
   def fold[ B >: A ]( initialValue: B )( f: (A, A) => B ): B
   
   //- fold(start)(function) => a value
@@ -44,7 +44,10 @@ case object EmptyList extends MyList[ Nothing ] {
   override def ++[ B >: Nothing ]( list: MyList[ B ] ): MyList[ B ] = list
   override def foreach( f: Nothing => Unit ): Unit = EmptyList
   override def sort( f: (Nothing, Nothing) => Int ): MyList[ Nothing ] = EmptyList
-  override def zipWith[ B >: Nothing ]( anotherList: MyList[ B ], f: (Nothing, Nothing) => B ): MyList[ B ] = EmptyList
+  override def zipWith[ B, C ]( anotherList: MyList[ B ], f: (Nothing, B) => C ): MyList[ C ] = {
+    if( !anotherList.isEmpty ) throw new RuntimeException( "Both lists should have the same length." )
+    else EmptyList
+  }
   override def fold[ B >: Nothing ]( initialValue: B )( f: (Nothing, Nothing) => B ): B = initialValue
 }
 
@@ -116,9 +119,9 @@ case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
     insert( sortedTail, EmptyList )
   }
   
-  override def zipWith[ B >: A ]( anotherList: MyList[ B ], zippingFunction: (A, A) => B ): MyList[ B ] = {
-    if( anotherList.isEmpty ) EmptyList
-    else Node( zippingFunction( head, anotherList.head.asInstanceOf[ A ] ), tail.zipWith( anotherList.tail, zippingFunction ) )
+  override def zipWith[ B, C ]( anotherList: MyList[ B ], zippingFunction: (A, B) => C ): MyList[ C ] = {
+    if( anotherList.isEmpty ) throw new RuntimeException( "Both lists should have the same length." )
+    else Node( zippingFunction( head, anotherList.head ), tail.zipWith( anotherList.tail, zippingFunction ) )
   }
   
   override def fold[ B >: A ]( initialValue: B )( f: (A, A) => B ): B = {
