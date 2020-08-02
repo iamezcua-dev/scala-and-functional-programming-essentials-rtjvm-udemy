@@ -114,6 +114,12 @@ object HOFsCurries extends App with LazyLogging {
   println( s"=> Results: ${result2.toString}\n" )
   assert( result2.toString == "[ 9 (Integer), 8 (Integer), 7 (Integer), 6 (Integer), 5 (Integer), 3 (Integer) ]" )
   
+  val list3 = Node( 1, Node( 9, Node( 8, Node( 7, Node( 6, Node( 0, EmptyList ) ) ) ) ) )
+  logger.info( s"Sorting a list in descending order $list3" )
+  val result3 = list3.sort( descendingOrder )
+  println( s"=> Results: ${result3.toString}\n" )
+  assert( result3.toString == "[ 9 (Integer), 8 (Integer), 7 (Integer), 6 (Integer), 1 (Integer), 0 (Integer) ]" )
+  
   //	1.3 zipWith
   val anotherList = Node( 5, Node( 6, Node( 7, Node( 8, EmptyList ) ) ) )
   val multiply = ( x: Int, y: Int ) => x * y
