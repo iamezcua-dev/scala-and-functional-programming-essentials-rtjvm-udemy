@@ -103,22 +103,14 @@ case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
   }
   
   override def sort( f: (A, A) => Int ): MyList[ A ] = {
-    def sortHelper( list: MyList[ A ], sortedList: MyList[ A ] ): MyList[ A ] = {
-      if( list.isEmpty ) sortedList
-      else if( sortedList.isEmpty ) sortHelper( list.tail, Node( list.head, EmptyList ) )
-      // swap elements if the element of the left is "less than" the one in the right.
-      else sortHelper( list.tail, insert( list.head, sortedList ) )
+    def insert( head: A, sortedTail: MyList[ A ] ): MyList[ A ] = {
+      if( sortedTail.isEmpty ) Node( head, sortedTail )
+      else if( f( head, sortedTail.head ) > 0 ) Node( sortedTail.head, insert( head, sortedTail.tail ) )
+      else Node( head, Node( sortedTail.head, sortedTail.tail ) )
     }
     
-    def insert( number: A, sortedList: MyList[ A ] ): MyList[ A ] = {
-      if( sortedList.tail.isEmpty ) {
-        if( f( number, sortedList.head ) > 0 ) Node( sortedList.head, Node( number, EmptyList ) )
-        else Node( number, Node( sortedList.head, EmptyList ) )
-      } else if( f( number, sortedList.head ) > 0 ) Node( sortedList.head, insert( number, sortedList.tail ) )
-      else Node( number, Node( sortedList.head, sortedList.tail ) )
-    }
-    
-    sortHelper( this, EmptyList )
+    val sortedTail = tail.sort( f )
+    insert( head, sortedTail )
   }
   
   override def zipWith[ B >: A ]( anotherList: MyList[ B ], zippingFunction: (A, A) => B ): MyList[ B ] = {
