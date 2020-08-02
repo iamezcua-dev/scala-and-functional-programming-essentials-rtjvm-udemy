@@ -2,6 +2,8 @@ package exercises
 
 import com.typesafe.scalalogging.LazyLogging
 
+import scala.annotation.tailrec
+
 // Covariant class
 abstract class MyList[ +A ] {
   /*
@@ -103,14 +105,15 @@ case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
   }
   
   override def sort( f: (A, A) => Int ): MyList[ A ] = {
-    def insert( head: A, sortedTail: MyList[ A ] ): MyList[ A ] = {
-      if( sortedTail.isEmpty ) Node( head, sortedTail )
-      else if( f( head, sortedTail.head ) > 0 ) Node( sortedTail.head, insert( head, sortedTail.tail ) )
-      else Node( head, Node( sortedTail.head, sortedTail.tail ) )
+    @tailrec
+    def insert( sortedTail: MyList[ A ], currentList: MyList[ A ] ): MyList[ A ] = {
+      if( sortedTail.isEmpty ) currentList ++ Node( head, EmptyList )
+      else if( f( head, sortedTail.head ) > 0 ) insert( sortedTail.tail, currentList ++ Node( sortedTail.head, EmptyList ) )
+      else currentList ++ Node( head, EmptyList ) ++ sortedTail
     }
     
     val sortedTail = tail.sort( f )
-    insert( head, sortedTail )
+    insert( sortedTail, EmptyList )
   }
   
   override def zipWith[ B >: A ]( anotherList: MyList[ B ], zippingFunction: (A, A) => B ): MyList[ B ] = {
