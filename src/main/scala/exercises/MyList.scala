@@ -26,7 +26,7 @@ abstract class MyList[ +A ] {
   def foreach( f: A => Unit ): Unit
   def sort( f: (A, A) => Int ): MyList[ A ]
   def zipWith[ B, C ]( anotherList: MyList[ B ], zippingFunction: (A, B) => C ): MyList[ C ]
-  def fold[ B >: A ]( initialValue: B )( f: (A, A) => B ): B
+  def fold[ B ]( initialValue: B )( f: (B, A) => B ): B
   
   //- fold(start)(function) => a value
   //[1,2,3].fold(0)(x + y) = 6
@@ -48,7 +48,7 @@ case object EmptyList extends MyList[ Nothing ] {
     if( !anotherList.isEmpty ) throw new RuntimeException( "Both lists should have the same length." )
     else EmptyList
   }
-  override def fold[ B >: Nothing ]( initialValue: B )( f: (Nothing, Nothing) => B ): B = initialValue
+  override def fold[ B ]( initialValue: B )( f: (B, Nothing) => B ): B = initialValue
 }
 
 case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
@@ -124,9 +124,9 @@ case class Node[ +A ]( element: A, listTail: MyList[ A ] ) extends MyList[ A ] {
     else Node( zippingFunction( head, anotherList.head ), tail.zipWith( anotherList.tail, zippingFunction ) )
   }
   
-  override def fold[ B >: A ]( initialValue: B )( f: (A, A) => B ): B = {
-    tail.fold( f( initialValue.asInstanceOf[ A ], head ) )( f )
-  }
+  override def fold[ B ]( initialValue: B )( f: (B, A) => B ): B =
+    tail.fold( f( initialValue, head ) )( f )
+  
 }
 
 //trait MyPredicate[ -T ] {
