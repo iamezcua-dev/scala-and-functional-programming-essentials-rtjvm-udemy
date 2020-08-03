@@ -24,6 +24,28 @@ object MapFlatmapFilterFor extends App {
    */
   val numbers = List( 1, 2, 3, 4 )
   val chars = List( 'a', 'b', 'c', 'd' )
+  val colors = List( "Black", "White", "Magenta" )
   
-  println( chars.flatMap( aChar => numbers.map( aNumber => s"$aChar$aNumber" ) ) )
+  println( chars.flatMap( aChar => numbers.flatMap( aNumber => colors.map( color => s"$aChar$aNumber - $color" ) ) ) )
+  
+  // foreach
+  list.foreach( println )
+  
+  // for-comprehensions
+  val forCombinations = for {
+    n <- numbers; c <- chars; color <- colors
+  } yield s"$c$n - $color"
+  
+  println( forCombinations )
+  
+  for {
+    n <- numbers
+  } println( n )
+  
+  // syntax overload
+  list.map { x =>
+    x * 2
+  }
+  
+  
 }
