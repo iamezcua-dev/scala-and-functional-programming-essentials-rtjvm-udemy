@@ -1,6 +1,9 @@
 package lectures.part3.functionalprogramming
 
-object MapFlatmapFilterFor extends App {
+import com.typesafe.scalalogging.LazyLogging
+import exercises.{ EmptyList, Just, Node }
+
+object MapFlatmapFilterFor extends App with LazyLogging {
   val list = List( 1, 2, 3 )
   println( list.head )
   println( list.tail )
@@ -47,5 +50,27 @@ object MapFlatmapFilterFor extends App {
     x * 2
   }
   
+  /*
+    Exercises
+    
+    1.  MyList supports for comprehensions?
+    2.  Implement a small collection of at most ONE element - Maybe[+T]
+          - Implement map, flatMap, filter functions
+   */
+  logger.info( "1) MyList supports for comprehensions?" )
+  val numberList = Node( 1, Node( 2, Node( 3, Node( 4, Node( 5, EmptyList ) ) ) ) )
+  for {
+    element <- numberList
+  } yield println( element )
   
+  println( "Answer: Yes, it does! I'm surprised!" )
+  println( "The reason behind is that any collection that properly implements map, filter and flatMap can qualify " +
+      "for being for-comprehension compatible" )
+  
+  logger.info( "2) Implementation of a small collection of maximum ONE element." )
+  val collection = Just( 1 )
+  println( collection )
+  println( s"Map ( multiply by 5 ): ${collection.map( _ * 5 )}" )
+  println( s"Filter ( greater that 0 ): ${collection.filter( _ > 0 )}" )
+  println( s"FlatMap ( transform to the boolean 'is even?' ): ${collection.flatMap( x => Just( x % 2 == 0 ) )}" )
 }
