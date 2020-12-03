@@ -81,7 +81,8 @@ object Sequences extends App {
       - Advantage:    Keeps reference to tail [ O(1) ]
       - Disadvantage: Updating an element in the middle takes long time [ O(n) ]
    */
-  println( s"Time took by List implementation: ${getWriteTime( 
+  println( s"Time took by List implementation: ${getWriteTime( numbersList )}" )
+  
   /*
     Vector implementation notes:
       - Advantage:    Depth of the three is small ( branch factor of 32 )
