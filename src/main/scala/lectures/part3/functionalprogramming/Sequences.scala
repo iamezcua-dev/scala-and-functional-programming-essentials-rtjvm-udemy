@@ -63,7 +63,7 @@ object Sequences extends App {
   def getWriteTime( collection: Seq[ Int ] ): Double = {
     val r = new Random
     val times = for {
-      it <- 1 to maxRuns
+      _ <- 1 to maxRuns
     } yield {
       val currentTime = System.nanoTime()
       collection.updated( r.nextInt( maxCapacity ), r.nextInt )
