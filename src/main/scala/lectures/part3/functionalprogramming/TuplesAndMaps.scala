@@ -34,8 +34,8 @@ object TuplesAndMaps extends App {
   println( phoneBook.filterKeys( x => x.startsWith( "J" ) ) )
   
   // mapValues
-  println( phoneBook.mapValues( number => number * 10 ) )
-  println( phoneBook.mapValues( number => s"0234-$number" ) )
+  println( phoneBook.view.mapValues( number => number * 10 ).toMap )
+  println( phoneBook.view.mapValues( number => s"0234-$number" ).toMap )
   
   // conversions to other collections
   println( phoneBook.toList )
