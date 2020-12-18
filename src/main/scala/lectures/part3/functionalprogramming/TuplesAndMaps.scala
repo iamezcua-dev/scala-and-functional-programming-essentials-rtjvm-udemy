@@ -139,16 +139,43 @@ object TuplesAndMaps extends App with LazyLogging {
       else socialNetworkContents.keySet.map( _.name.toLowerCase ).contains( personName.toLowerCase )
     }
     
-    def showPeopleWithoutFriends( ): Unit = {
-      ???
+    def showPeopleWithoutFriends( ): Set[ Person ] = {
+      if ( socialNetworkContents.isEmpty ) throw new Exception( "Social network is empty" )
+      else {
+        // Gets the people without friends by counting the number of friends of their associate List
+        socialNetworkContents
+            .map( association => association._1 -> association._2.size )
+            .filter( association => association._2 <= 0 ).keySet
+      }
     }
     
-    def personWithMostFriends( ): Unit = {
-      ???
+    def personWithMostFriends: Person = {
+      if ( socialNetworkContents.isEmpty ) throw new Exception( "Social network is empty" )
+      else {
+        // Identify the person with the highest number of friends. This is obtained by first computing the size of the
+        // associated List for each individual in the Social Network, and then applying a reduce operation where we perform
+        // a binary comparison where we only keep the association with the highest count.
+        socialNetworkContents
+            .map( association => association._1 -> association._2.size )
+            .reduce( ( associationA, associationB ) => {
+              if ( associationA._2 > associationB._2 ) associationA
+              else associationB
+            } )._1
+      }
     }
     
-    def isThereASocialConnectionBetween( personA: Person, personB: Person ): Boolean = {
-      ???
+    def isThereASocialConnectionBetween( personA: String, personB: String ): Boolean = {
+      logger.debug( s"Does $personA exist in Social Network? ${existInSocialNetwork( personA )}" )
+      logger.debug( s"Does $personB exist in Social Network? ${existInSocialNetwork( personB )}" )
+      if ( !( existInSocialNetwork( personA ) && existInSocialNetwork( personB ) ) ) false
+      else {
+        logger.debug( s"Friend list of $personA: ${socialNetworkContents( Person( personA ) )}" )
+        logger.debug( s"Friend list of $personA contains $personB: ${socialNetworkContents( Person( personA ) ).contains( Person( personB ) )}" )
+        logger.debug( s"Friend list of $personB: ${socialNetworkContents( Person( personB ) )}" )
+        logger.debug( s"Friend list of $personB contains $personA: ${socialNetworkContents( Person( personB ) ).contains( Person( personA ) )}" )
+        socialNetworkContents( Person( personA ) ).contains( Person( personB ) ) ||
+            socialNetworkContents( Person( personB ) ).contains( Person( personA ) )
+      }
     }
   }
   
@@ -204,5 +231,18 @@ object TuplesAndMaps extends App with LazyLogging {
   
   // 6) Person with most friends
   println( "6) Person with most friends" )
-  println( s"Person with most friends: ${socialNetworkWithFriends.personWithMostFriends()}" )
+  println( s"Person with most friends: ${socialNetworkWithFriends.personWithMostFriends}" )
+  
+  // 7) How many people have no friends?
+  println( "7) How many people have no friends?" )
+  val peopleWithoutFriends = socialNetworkWithFriends.showPeopleWithoutFriends()
+  if ( peopleWithoutFriends.isEmpty ) println( "* Every person in the Social Network has at least one friend!" )
+  else peopleWithoutFriends.foreach( person => println( s"\t- ${person.name}" ) )
+  
+  // 8) Is there is a social connection between people ( direct or not ) ?
+  println( s"* Is there is a social connection between Eréndira and Isaac ( direct or not ) ? " +
+      s"${socialNetworkWithFriends.isThereASocialConnectionBetween( "Eréndira Ávila", "Isaac Amezcua" )}" )
+  println( s"* Is there is a social connection between Eréndira and Benjamín ( direct or not ) ? " +
+      s"${socialNetworkWithFriends.isThereASocialConnectionBetween( "Eréndira Ávila", "Benjamín Vargas" )}" )
+  
 }
