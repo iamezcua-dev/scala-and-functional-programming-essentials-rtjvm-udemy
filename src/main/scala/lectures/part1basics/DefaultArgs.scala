@@ -1,0 +1,19 @@
+package com.rockthejvm
+package lectures.part1basics
+
+import scala.annotation.tailrec
+
+object DefaultArgs {
+  @tailrec
+  private def trFact(n: Int, acc: Int = 1): Int = {
+    if n <= 1 then acc
+    else trFact(n - 1, n * acc)
+  }
+
+  val fact10: Int = trFact(10)
+
+  private def savePicture(format: String = "jpg", width: Int = 1920, height: Int = 1080): Unit = println("Saving picture")
+
+  savePicture(width = 800)
+  savePicture(height = 600, width = 800, format = "bmp")
+}
