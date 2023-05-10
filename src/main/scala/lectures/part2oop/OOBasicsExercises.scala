@@ -49,21 +49,18 @@ class Novel(name: String, yearOfRelease: Int, author: Writer) {
 class Counter(n: Int) {
   def getCurrentCount: Int = this.n
 
-  def update(operation: Int): Counter = {
-    if operation == INCREMENT then new Counter(getCurrentCount + 1)
-    else if operation == DECREMENT then new Counter(getCurrentCount - 1)
-    else throw new UnsupportedOperationException("Unknown operation")
+  def update(operation: Int): Counter = operation match {
+    case INCREMENT => new Counter(getCurrentCount + 1)
+    case DECREMENT => new Counter(getCurrentCount - 1)
+    case _ => throw new UnsupportedOperationException("Unknown operation")
   }
 
-  def update(operation: Int, value: Int): Counter = {
-    val absolute_value = value.abs
-    if operation == INCREMENT then new Counter(getCurrentCount + absolute_value)
-    else if operation == DECREMENT then new Counter(getCurrentCount - absolute_value)
-    else throw new UnsupportedOperationException("Unknown operation")
-  }
+  def update(operation: Int, value: Int): Counter =
+    if value <= 0 then this
+    else update(operation).update(operation, value - 1)
 }
 
 object Counter {
-  val INCREMENT = 1
-  val DECREMENT = -1
+  val INCREMENT: Int = 1
+  val DECREMENT: Int = -1
 }
