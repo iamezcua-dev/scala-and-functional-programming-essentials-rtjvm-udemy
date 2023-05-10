@@ -24,6 +24,7 @@ object MethodNotations extends App {
   println(mary likes "Inception") // infix notation
 
   // Operators in Scala
+  // Infix notation
   private val tom = new Person("Tom", "Fight Club")
   println(mary + tom)
   println(mary.+(tom))
