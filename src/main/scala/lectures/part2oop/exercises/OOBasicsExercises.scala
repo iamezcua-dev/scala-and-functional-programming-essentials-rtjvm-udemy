@@ -2,7 +2,7 @@ package com.rockthejvm
 package lectures.part2oop.exercises
 
 import lectures.part2oop.exercises.Counter.{DECREMENT, INCREMENT}
-import lectures.part2oop.{Counter, Novel, Writer}
+import lectures.part2oop.exercises.{Counter, Novel, Writer}
 
 import java.time.LocalDateTime
 
