@@ -15,16 +15,15 @@ object OOBasicsExercises extends App {
   println(novel.isWrittenBy("José Saramago"))
 
   private val counter = new Counter(0)
-  println(
-    counter
-      .update(Counter.INCREMENT)
-      .update(Counter.INCREMENT)
-      .update(Counter.INCREMENT)
-      .update(Counter.INCREMENT)
-      .update(Counter.DECREMENT)
-      .update(Counter.INCREMENT, 20)
-      .getCurrentCount
-  )
+  counter
+    .update(Counter.INCREMENT)
+    .update(Counter.INCREMENT)
+    .update(Counter.INCREMENT)
+    .update(Counter.INCREMENT)
+    .update(Counter.DECREMENT)
+    .update(Counter.INCREMENT, 20)
+    .print()
+
 }
 
 class Writer(firstName: String, surname: String, val year: Int) {
@@ -58,6 +57,8 @@ class Counter(n: Int) {
   def update(operation: Int, value: Int): Counter =
     if value <= 0 then this
     else update(operation).update(operation, value - 1)
+
+  def print(): Unit = println(this.n)
 }
 
 object Counter {
