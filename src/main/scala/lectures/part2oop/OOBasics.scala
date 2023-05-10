@@ -1,6 +1,8 @@
 package com.rockthejvm
 package lectures.part2oop
 
+import lectures.part2oop.Person
+
 object OOBasics extends App {
   private val person = new Person("John", 26)
   println(person.age)
