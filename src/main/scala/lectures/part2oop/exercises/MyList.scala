@@ -4,7 +4,7 @@ package lectures.part2oop.exercises
 import scala.annotation.tailrec
 
 
-abstract class MyList {
+abstract class MyList[+A] {
   /*
     head = first element of the list
     tail = remainder of the list
@@ -12,27 +12,27 @@ abstract class MyList {
     add(int) => new list with this element added
     toString => a string representation of the list
   */
-  def head: Int
-  def tail: MyList
+  def head: A
+  def tail: MyList[A]
   def isEmpty: Boolean
-  def add(element: Int): MyList
+  def add[B >: A](element: B): MyList[B]
   def printElements: String
   override def toString: String = s"[ $printElements ]"
 }
 
-object Empty extends MyList {
-  def head: Int = throw new NoSuchElementException
-  def tail: MyList = throw new NoSuchElementException
+object Empty extends MyList[Nothing] {
+  def head: Nothing = throw new NoSuchElementException
+  def tail: MyList[Nothing] = throw new NoSuchElementException
   def isEmpty: Boolean = true
-  def add(element: Int): MyList = new Cons(element, Empty)
+  def add[B >: Nothing](element: B): MyList[B] = new Cons(element, Empty)
   def printElements: String = ""
 }
 
-class Cons(h: Int, t: MyList) extends MyList {
-  def head: Int = h
-  def tail: MyList = t
+class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
+  def head: A = h
+  def tail: MyList[A] = t
   def isEmpty: Boolean = false
-  def add(element: Int): MyList = new Cons(element, this)
+  def add[B >: A](element: B): MyList[B] = new Cons(element, this)
   override def printElements: String =
     if t.isEmpty then s"$h"
     else s"$h, ${t.printElements}"
@@ -41,7 +41,10 @@ class Cons(h: Int, t: MyList) extends MyList {
 object ListTest {
   @main
   def main(): Unit = {
-    val myList: MyList = new Cons(1, new Cons(2, new Cons(3, Empty)))
+    val myList: MyList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
     println(myList)
+    
+    val anotherList: MyList[String] = new Cons("Hello", new Cons("Scala", Empty))
+    println(anotherList)
   }
 }
