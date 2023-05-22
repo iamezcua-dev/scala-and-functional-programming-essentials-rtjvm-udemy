@@ -1,7 +1,7 @@
 package com.rockthejvm
 package lectures.part2oop.exercises
 
-import scala.annotation.tailrec
+import scala.annotation.{ tailrec, targetName }
 
 
 abstract class MyList[+A] {
@@ -18,6 +18,11 @@ abstract class MyList[+A] {
   def add[B >: A](element: B): MyList[B]
   def printElements: String
   override def toString: String = s"[ $printElements ]"
+  def map[B >: A](transformer: MyTransformer[A, B]): MyList[B]
+  def filter(predicate: MyPredicate[A]): MyList[A]
+  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
+  @targetName("concatenateWith")
+  def ++[B >: A](anotherList: MyList[B]): MyList[B]
 }
 
 object Empty extends MyList[Nothing] {
@@ -26,6 +31,12 @@ object Empty extends MyList[Nothing] {
   def isEmpty: Boolean = true
   def add[B >: Nothing](element: B): MyList[B] = new Cons(element, Empty)
   def printElements: String = ""
+  def map[B >: Nothing](transformer: MyTransformer[Nothing, B]): MyList[B] = Empty
+  def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
+  def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
+  @targetName("concatenateWith")
+  def ++[B >: Nothing](anotherList: MyList[B]): MyList[B] = anotherList
+  
 }
 
 class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -36,6 +47,39 @@ class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   override def printElements: String =
     if t.isEmpty then s"$h"
     else s"$h, ${t.printElements}"
+  def map[B >: A](transformer: MyTransformer[A, B]): MyList[B] = {
+    new Cons(transformer.transform(head), tail.map(transformer))
+  }
+  def filter(predicate: MyPredicate[A]): MyList[A] = {
+    if predicate.test(this.head) then new Cons(head, tail.filter(predicate))
+    else tail.filter(predicate)
+  }
+  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] = {
+    transformer.transform(head) ++ tail.flatMap(transformer)
+  }
+  @targetName("concatenateWith")
+  def ++[B >: A](anotherList: MyList[B]): MyList[B] = {
+    new Cons(head, tail ++ anotherList)
+  }
+  
+  /*
+  Desktop test:
+  
+  [1, 2, 3] ++ [8, 9, 10] =
+  = [1, [2, 3] ++ [8, 9, 10]]
+  = [1, 2, [3] ++ [8, 9, 10]]
+  = [1, 2, [3] ++ [8, 9, 10]]
+  = [1, 2, 3, Empty ++ [8, 9, 10]]
+  = [1, 2, 3, 8, 9, 10]
+  */
+}
+
+trait MyPredicate[-T] {
+  def test(element: T): Boolean
+}
+
+trait MyTransformer[-A, B] {
+  def transform(element: A): B
 }
 
 object ListTest {
