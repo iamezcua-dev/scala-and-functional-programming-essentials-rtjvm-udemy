@@ -25,11 +25,11 @@ abstract class MyList[+A] {
   def ++[B >: A](anotherList: MyList[B]): MyList[B]
 }
 
-object Empty extends MyList[Nothing] {
+case object Empty extends MyList[Nothing] {
   def head: Nothing = throw new NoSuchElementException
   def tail: MyList[Nothing] = throw new NoSuchElementException
   def isEmpty: Boolean = true
-  def add[B >: Nothing](element: B): MyList[B] = new Cons(element, Empty)
+  def add[B >: Nothing](element: B): MyList[B] = Cons(element, Empty)
   def printElements: String = ""
   def map[B >: Nothing](transformer: MyTransformer[Nothing, B]): MyList[B] = Empty
   def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
@@ -39,19 +39,19 @@ object Empty extends MyList[Nothing] {
   
 }
 
-class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
+case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   def head: A = h
   def tail: MyList[A] = t
   def isEmpty: Boolean = false
-  def add[B >: A](element: B): MyList[B] = new Cons(element, this)
+  def add[B >: A](element: B): MyList[B] = Cons(element, this)
   override def printElements: String =
     if t.isEmpty then s"$h"
     else s"$h, ${t.printElements}"
   def map[B >: A](transformer: MyTransformer[A, B]): MyList[B] = {
-    new Cons(transformer.transform(head), tail.map(transformer))
+    Cons(transformer.transform(head), tail.map(transformer))
   }
   def filter(predicate: MyPredicate[A]): MyList[A] = {
-    if predicate.test(this.head) then new Cons(head, tail.filter(predicate))
+    if predicate.test(this.head) then Cons(head, tail.filter(predicate))
     else tail.filter(predicate)
   }
   def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] = {
@@ -59,7 +59,7 @@ class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   }
   @targetName("concatenateWith")
   def ++[B >: A](anotherList: MyList[B]): MyList[B] = {
-    new Cons(head, tail ++ anotherList)
+    Cons(head, tail ++ anotherList)
   }
   
   /*
@@ -85,10 +85,12 @@ trait MyTransformer[-A, B] {
 object ListTest {
   @main
   def main(): Unit = {
-    val myList: MyList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
+    val myList: MyList[Int] = Cons(1, Cons(2, Cons(3, Empty)))
+    val cloneMyList: MyList[Int] = Cons(1, Cons(2, Cons(3, Empty)))
     println(myList)
+    println(myList == cloneMyList)
     
-    val anotherList: MyList[String] = new Cons("Hello", new Cons("Scala", Empty))
+    val anotherList: MyList[String] = Cons("Hello", Cons("Scala", Empty))
     println(anotherList)
   }
 }
