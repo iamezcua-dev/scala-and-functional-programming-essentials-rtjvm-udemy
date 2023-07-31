@@ -73,22 +73,29 @@ object Exceptions extends App {
 
   class UnderflowException extends Exception
 
-  class MathCalculationException extends ArithmeticException
+  class MathCalculationException extends Exception
 
   class PocketCalculator {
     def add(x: Int, y: Int): Int = {
       val result = x + y
-      if x >= 0 && y >= 0 && result < 0 then throw new OverflowException
-      result
+      if x > 0 && y > 0 && result < 0 then throw new OverflowException
+      else if x < 0 && y < 0 && result > 0 then throw new UnderflowException
+      else result
     }
 
     def subtract(x: Int, y: Int): Int = {
       val result = x - y
-      if x < 0 && y > x && result > 0 then throw new UnderflowException
+      if x < 0 && y > 0 && result > 0 then throw new UnderflowException
+      else if x > 0 && y < 0 && result < 0 then throw new OverflowException
       result
     }
 
-    def multiply(x: Int, y: Int): Int = x * y
+    def multiply(x: Int, y: Int): Int = {
+      val result = x * y
+      if (x > 0 && y > 0) && (result < 0 || (result < x || result < y)) then throw new OverflowException
+      else if ((x < 0 && y > 0) && (result == 0 || result == x)) || ((x > 0 && y < 0) && (result == 0 || result == y)) then throw new UnderflowException
+      else result
+    }
 
     def divide(x: Int, y: Int): Int = {
       if y == 0 then throw new MathCalculationException
@@ -117,7 +124,10 @@ object Exceptions extends App {
 
 
   try println(sum)
-  catch case overflow: OverflowException => println(s"Summing up $a_sum to $b_sum would overflow Int capacity.")
+  catch {
+    case overflow: OverflowException => println(s"Summing up $a_sum to $b_sum would overflow Int capacity.")
+    case underflow: UnderflowException => println(s"Subtracting $a_sub to $b_sub would underflow Int capacity.")
+  }
 
   try println(subtraction)
   catch case underflow: UnderflowException => println(s"Subtracting $a_sub to $b_sub would underflow Int capacity.")
