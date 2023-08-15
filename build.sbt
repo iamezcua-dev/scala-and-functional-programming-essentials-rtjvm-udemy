@@ -7,7 +7,7 @@ Test / scalaSource := baseDirectory.value / "src" / "test" / "scala"
 
 lazy val root = (project in file("."))
     .settings(
-      name := "scala_and_functional_programming_essentials_rock_the_jvm_udemy",
+      name := "scala-and-functional-programming-essentials-rock-the-jvm-udemy",
       idePackagePrefix := Some("com.rockthejvm"),
       libraryDependencies ++= Seq(
         "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
