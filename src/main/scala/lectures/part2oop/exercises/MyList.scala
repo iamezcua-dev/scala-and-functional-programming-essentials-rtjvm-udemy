@@ -111,21 +111,16 @@ object ListTest {
     println(listOfIntegers)
     println(listOfStrings)
 
-    val doubler = new Function1[Int, Int] {
-      override def apply(element: Int): Int = element * 2
-    }
+    val doubler: Int => Int = _ * 2
     println(listOfIntegers.map(doubler))
 
-    val evenNumbersOnlyFilter = new Function1[Int, Boolean] {
-      override def apply(element: Int): Boolean = element % 2 == 0
-    }
+    val evenNumbersOnlyFilter: Int => Boolean = _ % 2 == 0
+
     println(listOfIntegers.filter(evenNumbersOnlyFilter))
 
     println(listOfIntegers ++ anotherListOfIntegers)
 
-    val elementAndElementPlusOneTransformer = new Function1[Int, MyList[Int]] {
-      override def apply(element: Int): MyList[Int] = Cons(element, Cons(element + 1, Empty))
-    }
+    val elementAndElementPlusOneTransformer: Int => MyList[Int] = element => Cons(element, Cons(element + 1, Empty))
     println(listOfIntegers.flatMap(elementAndElementPlusOneTransformer))
 
     // Testing case-class instances with the same data
