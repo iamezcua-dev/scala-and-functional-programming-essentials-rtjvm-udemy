@@ -1,7 +1,7 @@
 package com.rockthejvm
 package lectures.part2oop.exercises
 
-import scala.annotation.{ tailrec, targetName }
+import scala.annotation.{tailrec, targetName}
 
 
 abstract class MyList[+A] {
@@ -13,55 +13,80 @@ abstract class MyList[+A] {
     toString => a string representation of the list
   */
   def head: A
+
   def tail: MyList[A]
+
   def isEmpty: Boolean
+
   def add[B >: A](element: B): MyList[B]
+
   def printElements: String
+
   override def toString: String = s"[ $printElements ]"
-  def map[B >: A](transformer: MyTransformer[A, B]): MyList[B]
-  def filter(predicate: MyPredicate[A]): MyList[A]
-  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B]
+
+  def map[B >: A](transformer: A => B): MyList[B]
+
+  def filter(predicate: A => Boolean): MyList[A]
+
+  def flatMap[B](transformer: A => MyList[B]): MyList[B]
+
   @targetName("concatenateWith")
   def ++[B >: A](anotherList: MyList[B]): MyList[B]
 }
 
 case object Empty extends MyList[Nothing] {
   def head: Nothing = throw new NoSuchElementException
+
   def tail: MyList[Nothing] = throw new NoSuchElementException
+
   def isEmpty: Boolean = true
+
   def add[B >: Nothing](element: B): MyList[B] = Cons(element, Empty)
+
   def printElements: String = ""
-  def map[B >: Nothing](transformer: MyTransformer[Nothing, B]): MyList[B] = Empty
-  def filter(predicate: MyPredicate[Nothing]): MyList[Nothing] = Empty
-  def flatMap[B](transformer: MyTransformer[Nothing, MyList[B]]): MyList[B] = Empty
+
+  def map[B >: Nothing](transformer: Nothing => B): MyList[B] = Empty
+
+  def filter(predicate: Nothing => Boolean): MyList[Nothing] = Empty
+
+  def flatMap[B](transformer: Nothing => MyList[B]): MyList[B] = Empty
+
   @targetName("concatenateWith")
   def ++[B >: Nothing](anotherList: MyList[B]): MyList[B] = anotherList
-  
+
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   def head: A = h
+
   def tail: MyList[A] = t
+
   def isEmpty: Boolean = false
+
   def add[B >: A](element: B): MyList[B] = Cons(element, this)
+
   override def printElements: String =
     if t.isEmpty then s"$h"
     else s"$h, ${t.printElements}"
-  def map[B >: A](transformer: MyTransformer[A, B]): MyList[B] = {
-    Cons(transformer.transform(head), tail.map(transformer))
+
+  def map[B >: A](transformer: A => B): MyList[B] = {
+    Cons(transformer(head), tail.map(transformer))
   }
-  def filter(predicate: MyPredicate[A]): MyList[A] = {
-    if predicate.test(this.head) then Cons(head, tail.filter(predicate))
+
+  def filter(predicate: A => Boolean): MyList[A] = {
+    if predicate(this.head) then Cons(head, tail.filter(predicate))
     else tail.filter(predicate)
   }
-  def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] = {
-    transformer.transform(head) ++ tail.flatMap(transformer)
+
+  def flatMap[B](transformer: A => MyList[B]): MyList[B] = {
+    transformer(head) ++ tail.flatMap(transformer)
   }
+
   @targetName("concatenateWith")
   def ++[B >: A](anotherList: MyList[B]): MyList[B] = {
     Cons(head, tail ++ anotherList)
   }
-  
+
   /*
   Desktop test:
   
@@ -74,23 +99,36 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
   */
 }
 
-trait MyPredicate[-T] {
-  def test(element: T): Boolean
-}
-
-trait MyTransformer[-A, B] {
-  def transform(element: A): B
-}
 
 object ListTest {
   @main
   def main(): Unit = {
-    val myList: MyList[Int] = Cons(1, Cons(2, Cons(3, Empty)))
-    val cloneMyList: MyList[Int] = Cons(1, Cons(2, Cons(3, Empty)))
-    println(myList)
-    println(myList == cloneMyList)
-    
-    val anotherList: MyList[String] = Cons("Hello", Cons("Scala", Empty))
-    println(anotherList)
+    val listOfIntegers: MyList[Int] = Cons(1, Cons(2, Cons(3, Empty)))
+    val cloneListOfIntegers: MyList[Int] = Cons(1, Cons(2, Cons(3, Empty)))
+    val anotherListOfIntegers: MyList[Int] = Cons(4, Cons(5, Empty))
+    val listOfStrings: MyList[String] = Cons("Hello", Cons("Scala", Empty))
+
+    println(listOfIntegers)
+    println(listOfStrings)
+
+    val doubler = new Function1[Int, Int] {
+      override def apply(element: Int): Int = element * 2
+    }
+    println(listOfIntegers.map(doubler))
+
+    val evenNumbersOnlyFilter = new Function1[Int, Boolean] {
+      override def apply(element: Int): Boolean = element % 2 == 0
+    }
+    println(listOfIntegers.filter(evenNumbersOnlyFilter))
+
+    println(listOfIntegers ++ anotherListOfIntegers)
+
+    val elementAndElementPlusOneTransformer = new Function1[Int, MyList[Int]] {
+      override def apply(element: Int): MyList[Int] = Cons(element, Cons(element + 1, Empty))
+    }
+    println(listOfIntegers.flatMap(elementAndElementPlusOneTransformer))
+
+    // Testing case-class instances with the same data
+    println(cloneListOfIntegers == listOfIntegers) // this should be true, since the list's hasCode should be equal 
   }
 }
