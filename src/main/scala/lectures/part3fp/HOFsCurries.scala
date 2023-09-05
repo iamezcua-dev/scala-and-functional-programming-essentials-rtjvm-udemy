@@ -25,18 +25,19 @@ object HOFsCurries extends App {
   // increment10 = ntb(plusOne, 10) = x => plusOne(plusOne...(x))
 
   /**
+   * Recursively generate function calls (lambdas) to be applied later.
+   * This functions apply a function n times.
    *
-   *
-   * @param f
-   * @param n
-   * @return
+   * @param f The function to be applied
+   * @param n The number of times the function will be applied
+   * @return Recursive function calls that will expect an x value to be provided.
    */
   private def nTimesBetter(f: Int => Int, n: Int): Int => Int = {
     if n <= 0 then (x: Int) => x
     else (x: Int) => nTimesBetter(f, n - 1)(f(x))
   }
 
-  val plus10 = nTimesBetter(plusOne, 10)
+  private val plus10 = nTimesBetter(plusOne, 10)
   println(plus10(0))
 
   /*
