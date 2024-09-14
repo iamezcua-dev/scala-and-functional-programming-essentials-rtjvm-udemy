@@ -1,5 +1,3 @@
-name := "udemy-scala-beginners"
-
+name := "scala-and-functional-programming-essentials-rtjvm-udemy"
 version := "0.1"
-
-scalaVersion := "3.3.1"
+scalaVersion := "3.5.0"
