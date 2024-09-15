@@ -56,7 +56,7 @@ cmake-build-*/
 # IntelliJ
 .idea/
 out/
-bsp.json
+.bsp/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
