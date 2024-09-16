@@ -1,7 +1,9 @@
 package com.rockthejvm
 package lectures.part1.basics
 
-object Expressions extends App {
+import com.typesafe.scalalogging.LazyLogging
+
+object Expressions extends App with LazyLogging {
   val x = 1 + 2 // Expression
   println(x)
   
@@ -50,4 +52,25 @@ object Expressions extends App {
     
     if (z > 2) "hello" else "goodbye"
   }
+  
+  /**
+   * Exercises
+   */
+  // 1. Difference between "hello world" vs println("hello world")
+  logger.info("Answer: The \"hello world\" evaluates to String, while println(\"hello world\") evaluates to Unit and " +
+    "also prints such string as Side Effect")
+  
+  // 2. What are the values of the following expressions:
+  val someValue = {
+    2 < 3
+  }
+  logger.info("The value of the first expression is a Boolean (true).")
+  println(someValue)
+  
+  val someOtherValue = {
+    if (someValue) 239 else 986
+    42
+  }
+  logger.info("The value of the second expression is an Int (42).")
+  println(someOtherValue)
 }
