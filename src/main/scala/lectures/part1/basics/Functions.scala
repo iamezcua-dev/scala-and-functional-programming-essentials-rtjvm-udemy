@@ -80,7 +80,7 @@ object Functions extends App with LazyLogging {
     }
     
     if (n < 0) throw IllegalArgumentException()
-    if (n == 0) 0
+    else if (n == 0) 0
     else if (n == 1) 1
     else fibonacciHelper()
   }
