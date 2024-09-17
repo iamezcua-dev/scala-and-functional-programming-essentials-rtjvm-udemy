@@ -88,13 +88,12 @@ object Functions extends App with LazyLogging {
   // 4.
   def isPrime(n: Int): Boolean = {
     @tailrec
-    def isPrimeHelper(current: Int, result: Boolean = true): Boolean = {
-      if (current < 2) result
-      else if (n % current == 0) false
-      else isPrimeHelper(current - 1, result)
+    def isPrimeUntil(current: Int): Boolean = {
+      if (current < 2) true
+      else n % current != 0 && isPrimeUntil(current - 1)
     }
     
     if (n <= 1) false
-    else isPrimeHelper(n / 2)
+    else isPrimeUntil(n / 2)
   }
 }

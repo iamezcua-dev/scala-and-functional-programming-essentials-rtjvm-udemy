@@ -15,7 +15,7 @@ class PrimesTest extends AnyFreeSpec {
       }
     }
     "when can be divided by other than 1 or itself" - {
-      "should not be a prime number, like" in {
+      "should not be a prime number" in {
         assert(!isPrime(0)) // edge case: not prime
         assert(!isPrime(1)) // edge case: not prime
         assert(!isPrime(-1)) // negative number: not prime
