@@ -48,7 +48,7 @@ object Recursion extends App with LazyLogging {
   private def repeatString(text: String, times: Int): String =
     @tailrec
     def repeatStringHelper(remaining: Int, accum: String): String =
-      if (remaining == 0) accum
+      if (remaining <= 0) accum
       else repeatStringHelper(remaining - 1, accum + text)
     
     repeatStringHelper(times, "")
@@ -60,12 +60,13 @@ object Recursion extends App with LazyLogging {
   // 2.
   private def isPrime(number: Int): Boolean = {
     @tailrec
-    def isPrimeUntil(current: Int): Boolean = {
-      if (current <= 1) true
-      else number % current != 0 && isPrimeUntil(current - 1)
+    def isPrimeHelper(current: Int, isStillPrime: Boolean = true): Boolean = {
+      if (!isStillPrime) false
+      else if (current <= 1) true
+      else isPrimeHelper(current - 1, isStillPrime && number % current != 0)
     }
     
-    number >= 2 && isPrimeUntil(number / 2)
+    number >= 2 && isPrimeHelper(number / 2)
   }
   
   // Assertions for known prime numbers
