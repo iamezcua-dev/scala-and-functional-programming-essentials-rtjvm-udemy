@@ -166,7 +166,7 @@ object TuplesAndMapsExercisesSolution extends App {
       }
     }
     
-    bfs(b, Set(), network(a) + a)
+    bfs(target = b, consideredPeople = Set(), discoveredPeople = network(a) + a)
   }
   
   println(s"*** Test network contents:\n$testNet")
